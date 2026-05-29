@@ -59,9 +59,7 @@
     enable = true;
     extraPackages = with pkgs; [
       intel-media-driver    # iHD VAAPI driver (Tiger Lake+)
-      libva-intel-driver    # legacy i965 VAAPI driver
       intel-compute-runtime # OpenCL
-      vaapiIntel
     ];
   };
 

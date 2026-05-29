@@ -24,7 +24,6 @@
     # lazyssh     # check if in nixpkgs; install manually if not
     cmake
     nodejs
-    nodePackages.pnpm
     python3
     python3Packages.pipx
     uv

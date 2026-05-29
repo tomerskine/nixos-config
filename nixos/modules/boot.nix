@@ -4,6 +4,9 @@
   # systemd-boot — matches current Arch setup (Dell UEFI, no Secure Boot)
   boot.loader.systemd-boot.enable      = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  # 5-second menu timeout for dual-boot: Arch entry is auto-discovered from
+  # /boot/loader/entries/arch-linux.conf; NixOS is the default.
+  boot.loader.systemd-boot.timeout = 5;
 
   # Latest kernel (matches Arch linux-latest)
   boot.kernelPackages = pkgs.linuxPackages_latest;

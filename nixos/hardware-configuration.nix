@@ -1,6 +1,7 @@
-# Generated from current Arch Linux disk layout.
-# After running `nixos-generate-config --root /mnt` during install, compare
-# the generated file with this one and reconcile any UUID/path differences.
+# NixOS partition: /dev/nvme0n1p3 (btrfs, ~476 GiB)
+# Replace NIXOS-BTRFS-UUID below with the output of:
+#   blkid /dev/nvme0n1p3
+# See docs/DUALBOOT.md for the full partitioning procedure.
 { config, lib, pkgs, modulesPath, ... }:
 
 {
@@ -10,33 +11,37 @@
   boot.initrd.availableKernelModules = [
     "xhci_pci" "thunderbolt" "nvme" "usb_storage" "sd_mod"
   ];
-  boot.initrd.kernelModules = [ "dm-mod" ];   # LVM device mapper
+  boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
 
-  # LVM support in initrd
-  boot.initrd.services.lvm.enable = true;
-
-  # Btrfs subvolumes on LVM (matches current /etc/fstab exactly)
+  # Btrfs subvolumes on /dev/nvme0n1p3 (no LVM — plain btrfs partition)
   fileSystems."/" = {
-    device  = "/dev/ArchinstallVg/root";
+    device  = "/dev/disk/by-uuid/NIXOS-BTRFS-UUID";
     fsType  = "btrfs";
     options = [ "subvol=/@" "compress=zstd:3" "ssd" "discard=async" "space_cache=v2" ];
   };
 
   fileSystems."/home" = {
-    device  = "/dev/ArchinstallVg/root";
+    device  = "/dev/disk/by-uuid/NIXOS-BTRFS-UUID";
     fsType  = "btrfs";
     options = [ "subvol=/@home" "compress=zstd:3" "ssd" "discard=async" "space_cache=v2" ];
   };
 
+  # /nix gets noatime: the Nix store is read-heavy and atime updates add pointless I/O
+  fileSystems."/nix" = {
+    device  = "/dev/disk/by-uuid/NIXOS-BTRFS-UUID";
+    fsType  = "btrfs";
+    options = [ "subvol=/@nix" "compress=zstd:3" "ssd" "discard=async" "noatime" "space_cache=v2" ];
+  };
+
   fileSystems."/var/log" = {
-    device  = "/dev/ArchinstallVg/root";
+    device  = "/dev/disk/by-uuid/NIXOS-BTRFS-UUID";
     fsType  = "btrfs";
     options = [ "subvol=/@log" "compress=zstd:3" "ssd" "discard=async" "space_cache=v2" ];
   };
 
-  # EFI boot partition — UUID matches current /dev/nvme0n1p1
+  # Shared EFI partition — UUID unchanged from Arch install
   fileSystems."/boot" = {
     device  = "/dev/disk/by-uuid/6948-9FC4";
     fsType  = "vfat";

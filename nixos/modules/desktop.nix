@@ -12,7 +12,6 @@
   # GDM display manager with Wayland support
   services.displayManager.gdm = {
     enable  = true;
-    wayland = true;
   };
 
   # GNOME desktop environment

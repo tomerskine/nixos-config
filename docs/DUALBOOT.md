@@ -5,6 +5,45 @@ and install NixOS on the freed space with systemd-boot dual-boot (NixOS as defau
 
 ---
 
+## Reading This Guide From the NixOS Installer
+
+Open a terminal in the live environment, then use one of these two options:
+
+**Option A — clone from GitHub** (needs WiFi first):
+```bash
+# Connect to WiFi
+nmtui   # or: nmcli device wifi connect "SSID" password "PASSWORD"
+
+# Clone the repo and read docs with less
+git clone https://github.com/tomerskine/nixos-config ~/nixos-config
+less ~/nixos-config/docs/DUALBOOT.md    # this file
+less ~/nixos-config/docs/HOWTO-install.md
+less ~/nixos-config/docs/BACKUP-RESTORE.md
+```
+
+**Option B — read from the Arch partition** (no network needed):
+```bash
+# Activate the Arch LVM and mount the home subvolume read-only
+modprobe dm-mod
+vgchange -ay ArchinstallVg
+mkdir -p /mnt/arch-home
+mount -o subvol=/@home,ro /dev/ArchinstallVg/root /mnt/arch-home
+
+# Docs are at:
+less /mnt/arch-home/tom/repos/nixos-config/docs/DUALBOOT.md
+less /mnt/arch-home/tom/repos/nixos-config/docs/HOWTO-install.md
+less /mnt/arch-home/tom/repos/nixos-config/docs/BACKUP-RESTORE.md
+
+# When done reading, unmount before using /mnt for the NixOS install
+umount /mnt/arch-home
+```
+
+> Option A is preferred — you need WiFi for `nixos-install` anyway (to fetch packages),
+> so connecting first and cloning gives you the latest version of the docs. Use Option B
+> if you want to read ahead before setting up networking.
+
+---
+
 ## Status (2026-05-29)
 
 | Phase | Status | Notes |

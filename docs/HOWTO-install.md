@@ -5,6 +5,32 @@ using this flake configuration.
 
 ---
 
+## Reading This Guide From the NixOS Installer
+
+Open a terminal in the live environment, then use one of these two options:
+
+**Option A — clone from GitHub** (needs WiFi first):
+```bash
+nmtui   # connect to WiFi
+git clone https://github.com/tomerskine/nixos-config ~/nixos-config
+less ~/nixos-config/docs/HOWTO-install.md   # this file
+less ~/nixos-config/docs/DUALBOOT.md
+less ~/nixos-config/docs/BACKUP-RESTORE.md
+```
+
+**Option B — read from the Arch partition** (no network needed):
+```bash
+modprobe dm-mod
+vgchange -ay ArchinstallVg
+mkdir -p /mnt/arch-home
+mount -o subvol=/@home,ro /dev/ArchinstallVg/root /mnt/arch-home
+less /mnt/arch-home/tom/repos/nixos-config/docs/HOWTO-install.md
+# Unmount before using /mnt for the install:
+umount /mnt/arch-home
+```
+
+---
+
 ## Pre-Install Checklist
 
 Before booting the installer, complete these steps on your running Arch system:

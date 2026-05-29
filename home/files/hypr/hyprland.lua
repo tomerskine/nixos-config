@@ -326,6 +326,7 @@ hl.bind(secondMod .. " + Space", hl.dsp.exec_cmd(runner))
 hl.bind(mainMod .. " + Q", hl.dsp.window.close())
 hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("hyprlock"))
 hl.bind(mainMod .. " + Tab", hl.dsp.exec_cmd("rofi -show window"))
+hl.bind(mainMod .. " + N",   hl.dsp.exec_cmd("~/.config/waybar/scripts/rename-workspace.sh"))
 -- closeWindowBind:set_enabled(false)
 hl.bind(mainMod .. " + M", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"))
 -- menu replaced by rofi, vars launcher and runner

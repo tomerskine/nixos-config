@@ -28,4 +28,8 @@
     source     = ../files/waybar/scripts/clipboard.sh;
     executable = true;
   };
+  xdg.configFile."waybar/scripts/rename-workspace.sh" = {
+    source     = ../files/waybar/scripts/rename-workspace.sh;
+    executable = true;
+  };
 }

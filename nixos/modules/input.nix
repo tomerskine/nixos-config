@@ -5,7 +5,7 @@
 {
   services.logiops = {
     enable = true;
-    extraConfig = ''
+    config = ''
       devices: (
       {
           name: "MX Master 3S";

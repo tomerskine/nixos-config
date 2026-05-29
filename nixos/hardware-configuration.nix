@@ -1,5 +1,5 @@
 # NixOS partition: /dev/nvme0n1p3 (btrfs, ~476 GiB)
-# Replace NIXOS-BTRFS-UUID below with the output of:
+# Replace eb705586-089c-4730-b134-60130a55b353 below with the output of:
 #   blkid /dev/nvme0n1p3
 # See docs/DUALBOOT.md for the full partitioning procedure.
 { config, lib, pkgs, modulesPath, ... }:
@@ -17,26 +17,26 @@
 
   # Btrfs subvolumes on /dev/nvme0n1p3 (no LVM — plain btrfs partition)
   fileSystems."/" = {
-    device  = "/dev/disk/by-uuid/NIXOS-BTRFS-UUID";
+    device  = "/dev/disk/by-uuid/eb705586-089c-4730-b134-60130a55b353";
     fsType  = "btrfs";
     options = [ "subvol=/@" "compress=zstd:3" "ssd" "discard=async" "space_cache=v2" ];
   };
 
   fileSystems."/home" = {
-    device  = "/dev/disk/by-uuid/NIXOS-BTRFS-UUID";
+    device  = "/dev/disk/by-uuid/eb705586-089c-4730-b134-60130a55b353";
     fsType  = "btrfs";
     options = [ "subvol=/@home" "compress=zstd:3" "ssd" "discard=async" "space_cache=v2" ];
   };
 
   # /nix gets noatime: the Nix store is read-heavy and atime updates add pointless I/O
   fileSystems."/nix" = {
-    device  = "/dev/disk/by-uuid/NIXOS-BTRFS-UUID";
+    device  = "/dev/disk/by-uuid/eb705586-089c-4730-b134-60130a55b353";
     fsType  = "btrfs";
     options = [ "subvol=/@nix" "compress=zstd:3" "ssd" "discard=async" "noatime" "space_cache=v2" ];
   };
 
   fileSystems."/var/log" = {
-    device  = "/dev/disk/by-uuid/NIXOS-BTRFS-UUID";
+    device  = "/dev/disk/by-uuid/eb705586-089c-4730-b134-60130a55b353";
     fsType  = "btrfs";
     options = [ "subvol=/@log" "compress=zstd:3" "ssd" "discard=async" "space_cache=v2" ];
   };

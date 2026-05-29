@@ -1,0 +1,134 @@
+{
+    "layer": "top",
+    "modules-left": ["hyprland/workspaces", "hyprland/submap"],
+    "modules-center": ["hyprland/window"],
+    "modules-right": ["mpris", "group/connectivity", "pulseaudio", "group/power", "group/controls", "tray", "custom/power", "clock"],
+    "hyprland/window": {
+        "max-length": 50
+    },
+    "mpris": {
+        "format": "{player_icon} {title} — {artist}",
+        "format-paused": "{status_icon} {title} — {artist}",
+        "player-icons": {
+            "default": "▶",
+            "spotify": ""
+        },
+        "status-icons": {
+            "paused": "⏸"
+        },
+        "max-length": 40,
+        "on-click": "playerctl play-pause",
+        "on-click-right": "playerctl next",
+        "on-click-middle": "playerctl previous"
+    },
+    "group/connectivity": {
+        "orientation": "horizontal",
+        "drawer": {
+            "transition-duration": 300,
+            "transition-left-to-right": false
+        },
+        "modules": ["network", "bluetooth", "custom/tailscale"]
+    },
+    "group/power": {
+        "orientation": "horizontal",
+        "drawer": {
+            "transition-duration": 300,
+            "transition-left-to-right": false
+        },
+        "modules": ["battery", "power-profiles-daemon"]
+    },
+    "group/controls": {
+        "orientation": "horizontal",
+        "drawer": {
+            "transition-duration": 300,
+            "transition-left-to-right": false
+        },
+        "modules": ["idle_inhibitor", "custom/dnd", "custom/clipboard"]
+    },
+    "bluetooth": {
+        "format": "󰂯",
+        "format-connected": "󰂱 {device_alias}",
+        "format-off": "󰂲",
+        "tooltip-text": "{controller_alias} ({controller_address})\n{num_connections} connected",
+        "on-click": "blueman-manager"
+    },
+    "custom/tailscale": {
+        "exec": "~/.config/waybar/scripts/tailscale-status.sh",
+        "return-type": "json",
+        "interval": 5,
+        "on-click": "~/.config/waybar/scripts/tailscale-menu.sh",
+        "tooltip": true
+    },
+    "network": {
+        "format-wifi": "󰖩",
+        "format-ethernet": "󰈀",
+        "format-disconnected": "󰖪",
+        "tooltip-format-wifi": "{essid}\n{ipaddr}\nSignal: {signalStrength}%\nGateway: {gwaddr}\n↑ {bandwidthUpBits}  ↓ {bandwidthDownBits}",
+        "tooltip-format-ethernet": "{ifname}\n{ipaddr}\nGateway: {gwaddr}\n↑ {bandwidthUpBits}  ↓ {bandwidthDownBits}",
+        "tooltip-format-disconnected": "No connection",
+        "on-click": "~/.config/waybar/scripts/wifi-menu.sh"
+    },
+    "pulseaudio": {
+        "format": "{volume}% {icon}",
+        "format-muted": "󰝟 Muted",
+        "format-icons": {
+            "default": ["󰕿", "󰖀", "󰕾"]
+        },
+        "on-click": "pavucontrol",
+        "on-click-middle": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
+        "scroll-step": 5
+    },
+    "battery": {
+        "format": "{capacity}% {icon}",
+        "format-icons": ["", "", "", "", ""],
+        "format-charging": "{capacity}% 󰂄",
+        "format-plugged": "{capacity}% 󰚥",
+        "states": {
+            "warning": 30,
+            "critical": 15
+        },
+        "tooltip-text": "{timeTo}",
+        "on-click": "kitty --hold -e sh -c 'upower -i $(upower -e | grep battery | head -1)'"
+    },
+    "power-profiles-daemon": {
+        "format": "{icon}",
+        "tooltip-text": "{profile}\nDriver: {driver}",
+        "tooltip": true,
+        "format-icons": {
+            "default":      "󰈐",
+            "performance":  "󰓅",
+            "balanced":     "󰾅",
+            "power-saver":  "󰾆"
+        }
+    },
+    "tray": {
+        "spacing": 8
+    },
+    "idle_inhibitor": {
+        "format": "{icon}",
+        "format-icons": {
+            "activated": "󰒳",
+            "deactivated": "󰒲"
+        }
+    },
+    "custom/dnd": {
+        "exec": "makoctl mode | grep -q do-not-disturb && echo '{\"text\":\"󰂛\",\"class\":\"dnd\"}' || echo '{\"text\":\"󰂚\"}'",
+        "return-type": "json",
+        "interval": 2,
+        "on-click": "sh -c 'makoctl mode | grep -q do-not-disturb && makoctl mode -r do-not-disturb || makoctl mode -a do-not-disturb'",
+        "tooltip": false
+    },
+    "custom/clipboard": {
+        "format": "󰅍",
+        "on-click": "~/.config/waybar/scripts/clipboard.sh",
+        "tooltip": false
+    },
+    "custom/power": {
+        "format": "⏻",
+        "on-click": "~/.config/waybar/scripts/power-menu.sh",
+        "tooltip": false
+    },
+    "clock": {
+        "format-alt": "{:%a, %d. %b  %H:%M}"
+    }
+}

@@ -5,190 +5,46 @@ and install NixOS on the freed space with systemd-boot dual-boot (NixOS as defau
 
 ---
 
-## Current Disk Layout
+## Status (2026-05-29)
+
+| Phase | Status | Notes |
+|---|---|---|
+| Phase 1 — Partition work | **Complete** | Done from running Arch, not live USB |
+| Phase 2 — Nix config updates | **Complete** | UUID committed to repo |
+| Phase 3 — Mount + nixos-install | **Next step** | Boot NixOS live USB and run install |
+
+### Actual disk layout as of 2026-05-29
 
 ```
 nvme0n1 (953.9 GiB)
-├── nvme0n1p1    1 GiB   vfat (EFI)   UUID:6948-9FC4    ← systemd-boot lives here
-└── nvme0n1p2  ~952 GiB  LVM2 PV      ArchinstallVg
-    └── ArchinstallVg/root  btrfs     @, @home, @log, @pkg
+├── nvme0n1p1    1 GiB    vfat (EFI)   UUID:6948-9FC4          ← shared, unchanged
+├── nvme0n1p2  476 GiB    LVM2 PV      ArchinstallVg           ← Arch
+│   └── ArchinstallVg-root  460 GiB btrfs  @, @home, @log, @pkg
+└── nvme0n1p3  476.9 GiB  btrfs        UUID:eb705586-089c-4730-b134-60130a55b353  ← NixOS
+    └── subvolumes: @, @home, @nix, @log  (formatted, ready)
 ```
 
-Only ~18 GiB of the 952 GiB is actually used — plenty of room to shrink.
+**What's done:**
+- btrfs filesystem resized to 460 GiB (`btrfs filesystem resize --resizefs`)
+- LV resized to 460 GiB (`lvresize -L 460G --resizefs`)
+- PV resized (`pvresize --setphysicalvolumesize 461G`)
+- Partition nvme0n1p2 shrunk to 476 GiB, nvme0n1p3 created at 476.9 GiB
+- nvme0n1p3 formatted btrfs with label `nixos`, subvolumes @, @home, @nix, @log created
+- `hardware-configuration.nix` updated with real UUID `eb705586-...`
+- `boot.nix` updated with `systemd-boot.timeout = 5`
+
+**Note:** The partition resize was done from the running Arch system (not the live USB as
+originally planned). The btrfs online resize succeeded; `lvresize --resizefs` handled both
+the LV and btrfs in one step. The system rebooted cleanly.
 
 ---
 
-## Target Disk Layout
+## Next Step — Run the Installer (Phase 3)
 
-```
-nvme0n1 (953.9 GiB)
-├── nvme0n1p1    1 GiB   vfat (EFI)   UUID:6948-9FC4     ← shared, unchanged
-├── nvme0n1p2  ~476 GiB  LVM2 PV      ArchinstallVg      ← Arch, shrunk from 952 GiB
-│   └── ArchinstallVg/root  btrfs     @, @home, @log, @pkg
-└── nvme0n1p3  ~476 GiB  btrfs                           ← NixOS, new
-    └── subvolumes: @, @home, @nix, @log
-```
-
-NixOS uses a plain btrfs partition (no LVM). The `/nix` subvolume gets `noatime`
-because the Nix store sees very high read traffic and `atime` updates are wasted I/O.
-
----
-
-## Answering the Approach Questions
-
-### Can this be done via Nix configs?
-
-**Partially.** The NixOS side is fully declarative:
-- `hardware-configuration.nix` references the new partition by UUID and declares all subvolume mounts
-- `boot.nix` sets the systemd-boot timeout so the boot menu appears
-
-The Arch shrink cannot be declarative — resizing an existing partition requires offline tools
-regardless of approach.
-
-### Can this be done via a custom install image?
-
-Yes, but it adds unnecessary complexity. A disko config baked into a custom ISO would
-auto-partition the NixOS half, but you still need to shrink Arch first. The stock NixOS
-live USB with manual steps is simpler and just as reliable.
-
-### Can this be done from the running Arch install?
-
-**Not safely.** Btrfs technically supports online resize, but shrinking a live root
-filesystem is dangerous. The safe approach is a NixOS live USB: one session handles
-both the Arch resize and the NixOS install offline.
-
-**Recommended: use a NixOS live USB for the entire operation.**
-
----
-
-## Phase 1 — Partition Work (NixOS live USB)
-
-Boot the NixOS minimal or graphical ISO. All commands run as root in the live terminal.
+Boot the NixOS live USB (`sda` — nixos-graphical-25.11-x86_64), then run as root:
 
 ```bash
-# Activate the existing Arch LVM
-modprobe dm-mod
-vgchange -ay ArchinstallVg
-
-# Verify Arch filesystem integrity and used space before touching anything
-mkdir -p /mnt/arch
-mount -o subvol=/@,ro /dev/ArchinstallVg/root /mnt/arch
-df -h /mnt/arch           # should show ~18 GiB used
-btrfs filesystem show /mnt/arch
-umount /mnt/arch
-
-# --- Shrink order: always FS → LV → PV → partition ---
-
-# Shrink the btrfs filesystem to 460 GiB
-mount -o subvol=/@ /dev/ArchinstallVg/root /mnt/arch
-btrfs filesystem resize 460G /mnt/arch
-umount /mnt/arch
-
-# Shrink the LVM logical volume to match
-lvresize -L 460G /dev/ArchinstallVg/root
-
-# Shrink the LVM physical volume (slight padding for LVM metadata)
-pvresize --setphysicalvolumesize 461G /dev/nvme0n1p2
-
-# Shrink the partition and create the NixOS partition
-parted /dev/nvme0n1
-  (parted) unit GiB
-  (parted) print                           # note current end of nvme0n1p2
-  (parted) resizepart 2 477GiB            # shrink Arch partition to 477 GiB
-  (parted) mkpart primary btrfs 477GiB 100%  # create NixOS partition
-  (parted) print                           # verify nvme0n1p3 was created
-  (parted) quit
-
-# Verify Arch btrfs is still intact after resize
-mount -o subvol=/@,ro /dev/ArchinstallVg/root /mnt/arch
-btrfs check --readonly /dev/ArchinstallVg/root
-umount /mnt/arch
-
-# Format the new NixOS partition
-mkfs.btrfs -L nixos /dev/nvme0n1p3
-
-# Create subvolumes
-mount /dev/nvme0n1p3 /mnt/nixos-btrfs
-btrfs subvolume create /mnt/nixos-btrfs/@
-btrfs subvolume create /mnt/nixos-btrfs/@home
-btrfs subvolume create /mnt/nixos-btrfs/@nix
-btrfs subvolume create /mnt/nixos-btrfs/@log
-umount /mnt/nixos-btrfs
-
-# Record the UUID — you will need it in hardware-configuration.nix
-blkid /dev/nvme0n1p3
-# → UUID="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-```
-
----
-
-## Phase 2 — Update the Nix Config
-
-Two files need updating before `nixos-install`. Do this while still in the live environment
-after cloning/copying the config repo.
-
-### `nixos/hardware-configuration.nix`
-
-Replace the LVM-based device paths with the new btrfs partition. Key changes:
-- Remove `boot.initrd.kernelModules = [ "dm-mod" ]` — no LVM on the NixOS partition
-- Remove `boot.initrd.services.lvm.enable = true`
-- Replace every `device = "/dev/ArchinstallVg/root"` with `device = "/dev/disk/by-uuid/<uuid>"`
-  where `<uuid>` is the UUID from `blkid /dev/nvme0n1p3`
-- Add a `fileSystems."/nix"` entry mounting `subvol=/@nix` with `noatime`
-- Leave `/boot` EFI mount unchanged (UUID `6948-9FC4`)
-- Leave Intel GPU/CPU/firmware hardware config unchanged
-
-Example filesystem entries:
-```nix
-fileSystems."/" = {
-  device = "/dev/disk/by-uuid/<nvme0n1p3-uuid>";
-  fsType = "btrfs";
-  options = [ "subvol=/@" "compress=zstd:3" "ssd" "discard=async" "space_cache=v2" ];
-};
-
-fileSystems."/home" = {
-  device = "/dev/disk/by-uuid/<nvme0n1p3-uuid>";
-  fsType = "btrfs";
-  options = [ "subvol=/@home" "compress=zstd:3" "ssd" "discard=async" "space_cache=v2" ];
-};
-
-fileSystems."/nix" = {
-  device = "/dev/disk/by-uuid/<nvme0n1p3-uuid>";
-  fsType = "btrfs";
-  options = [ "subvol=/@nix" "compress=zstd:3" "ssd" "discard=async" "noatime" "space_cache=v2" ];
-};
-
-fileSystems."/var/log" = {
-  device = "/dev/disk/by-uuid/<nvme0n1p3-uuid>";
-  fsType = "btrfs";
-  options = [ "subvol=/@log" "compress=zstd:3" "ssd" "discard=async" "space_cache=v2" ];
-};
-
-fileSystems."/boot" = {
-  device = "/dev/disk/by-uuid/6948-9FC4";  # unchanged
-  fsType = "vfat";
-};
-```
-
-### `nixos/modules/boot.nix`
-
-Add the boot menu timeout so you can select Arch on reboot:
-```nix
-boot.loader.systemd-boot.timeout = 5;
-```
-
-systemd-boot auto-discovers Arch's existing `/boot/loader/entries/arch-linux.conf`.
-NixOS sets itself as the default entry via `nixos-install` / `nixos-rebuild switch`.
-`canTouchEfiVariables = true` is kept so NixOS can write its default entry to EFI NVRAM.
-
----
-
-## Phase 3 — Install NixOS
-
-Continuing in the live environment after Phase 1 and 2:
-
-```bash
-# Mount NixOS subvolumes under /mnt
+# Mount NixOS subvolumes
 mount -o subvol=/@,compress=zstd:3,ssd,discard=async,space_cache=v2 \
     /dev/nvme0n1p3 /mnt
 
@@ -201,19 +57,14 @@ mount -o subvol=/@log,compress=zstd:3,ssd,discard=async,space_cache=v2 \
     /dev/nvme0n1p3 /mnt/var/log
 mount /dev/nvme0n1p1 /mnt/boot
 
-# Get the config (clone from remote or copy from the running Arch system)
-git clone <repo-url> /mnt/etc/nixos
-# OR copy from Arch if network is unavailable:
-# cp -r /run/media/.../nixos-config/* /mnt/etc/nixos/
-
-# Substitute the real nvme0n1p3 UUID into hardware-configuration.nix
-nano /mnt/etc/nixos/nixos/hardware-configuration.nix
+# Clone the config (UUID already set in hardware-configuration.nix — no manual edits needed)
+git clone https://github.com/tomerskine/nixos-config /mnt/etc/nixos
 
 # Install
 nixos-install --flake /mnt/etc/nixos#nixos9310
 # You will be prompted to set the root password.
 
-# After install completes, remove the USB and reboot
+# Remove the USB and reboot
 ```
 
 systemd-boot is written to `/mnt/boot/EFI/systemd/`. It preserves Arch's existing
@@ -223,8 +74,14 @@ systemd-boot is written to `/mnt/boot/EFI/systemd/`. It preserves Arch's existin
 
 ## After First Boot
 
-See `docs/HOWTO-install.md` → Step 7 and Step 8 for the full post-install checklist
-(set `tom` user password, restore wallpaper, apply chezmoi, authenticate tools, etc.).
+1. Log in as `root` (user `tom` has no password yet), then:
+   ```bash
+   passwd tom
+   ```
+2. Log in as `tom`, select Hyprland from GDM session menu
+3. Follow `docs/HOWTO-install.md` → Step 8 for the full post-install checklist
+   (restore wallpaper, age key, chezmoi, SSH keys, tool installs, etc.)
+4. Follow `docs/BACKUP-RESTORE.md` for the SD card restore steps
 
 ---
 
@@ -242,25 +99,41 @@ See `docs/HOWTO-install.md` → Step 7 and Step 8 for the full post-install chec
 
 ## Verification Checklist
 
-After install, confirm everything is working:
+After first NixOS boot:
 
 ```bash
-# From NixOS — verify disk layout
+# Verify disk layout
 lsblk
 # nvme0n1p1 (EFI), nvme0n1p2 (Arch LVM), nvme0n1p3 (NixOS btrfs) all present
 
-# Check NixOS mount layout
+# Check mount layout
 df -h
-# /, /home, /nix, /var/log all mounted from nvme0n1p3
+# /, /home, /nix, /var/log all mounted from nvme0n1p3 (eb705586-...)
 
-# Verify Hyprland session starts (see TROUBLESHOOTING.md if blank screen)
-# Verify Waybar appears
+# Verify Hyprland starts and Waybar appears
+# See TROUBLESHOOTING.md if blank screen or missing waybar
 
-# Reboot and select Arch from the boot menu
-# From Arch: verify btrfs is intact
-btrfs filesystem show /dev/ArchinstallVg/root
-# No errors; used space should be the same as before
+# Reboot, select Arch from the 5-second menu
+# From Arch: verify btrfs is still intact
+btrfs filesystem show /
+# Should show: devid 1 size 460.00GiB, no errors
 ```
+
+---
+
+## Original Approach Notes
+
+The original plan called for doing all partition work from the NixOS live USB.
+In practice, it was done from the running Arch system:
+
+- The `usb_storage` kernel module was missing (kernel updated but not rebooted), so the
+  live USB couldn't be used for the initial attempt
+- After rebooting into the updated kernel, the partition work was done from Arch instead
+- `lvresize --resizefs` proved simpler than the two-step btrfs-resize + lvresize sequence
+- The running system handled the online resize without issues
+
+The live USB is still required for `nixos-install` itself (you cannot install NixOS onto
+a mounted root partition from within that same system).
 
 ---
 
@@ -268,9 +141,8 @@ btrfs filesystem show /dev/ArchinstallVg/root
 
 | Risk | Mitigation |
 |---|---|
-| Arch data loss during resize | Only 18 GiB used of 829 GiB free; **back up `/home` first regardless** |
-| Btrfs FS inconsistency after resize | Shrink FS → LV → PV → partition in that order; run `btrfs check --readonly` after |
-| Partition table corruption | Verify with `parted /dev/nvme0n1 print` before and after each step |
+| Arch data loss during resize | Full backup taken to SD card (see BACKUP-RESTORE.md) before any partition work |
+| Btrfs FS inconsistency | Used `--resizefs` flag; system rebooted cleanly post-resize confirming integrity |
+| Partition table corruption | Verified with `lsblk` after partprobe; all partitions visible and correct |
 | EFI partition conflicts | systemd-boot handles multiple OS entries cleanly on a shared EFI partition |
 | NixOS install overwrites Arch boot entry | systemd-boot preserves existing `.conf` files in `/boot/loader/entries/` |
-| Forgetting to update hardware-configuration.nix UUID | `nixos-install` will fail to find the root partition — double-check before running |

@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
-STATE=$(tailscale status --json 2>/dev/null | grep '"BackendState"' | cut -d'"' -f4)
+JSON=$(tailscale status --json 2>/dev/null)
+STATE=$(echo "$JSON" | jq -r '.BackendState // empty' 2>/dev/null)
 
 case "$STATE" in
     Running)
-        MY_IP=$(tailscale ip --4 2>/dev/null | tr -d '[:space:]')
-        STATUS=$(tailscale status 2>/dev/null)
-        TOTAL=$(echo "$STATUS" | grep -v "^#" | grep -v "^[[:space:]]*$" | tail -n +2 | grep -c .)
-        ONLINE=$(echo "$STATUS" | grep -v "^#" | grep -v "^[[:space:]]*$" | tail -n +2 | grep -c "active")
+        MY_IP=$(echo "$JSON" | jq -r '.TailscaleIPs[0] // "unknown"' 2>/dev/null)
+        TOTAL=$(echo "$JSON"  | jq '[.Peer // {} | .[]] | length' 2>/dev/null)
+        ONLINE=$(echo "$JSON" | jq '[.Peer // {} | .[] | select(.Online == true)] | length' 2>/dev/null)
         echo "{\"text\":\"󰒍\",\"class\":\"connected\",\"tooltip\":\"$MY_IP\\n$ONLINE/$TOTAL peers online\"}"
         ;;
     Stopped|NoState|"")

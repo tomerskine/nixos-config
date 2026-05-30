@@ -6,9 +6,10 @@
 
 {
   wayland.windowManager.hyprland = {
-    enable     = true;
-    package    = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
-    configType = "lua";
+    enable        = true;
+    package       = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
+    configType    = "lua";
+    systemd.enable = false;  # config is managed via xdg.configFile (hyprland.lua), not HM options
   };
 
   # Lua config and all helper files placed verbatim

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 nmcli device wifi rescan 2>/dev/null
 

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 JSON=$(tailscale status --json 2>/dev/null)
 STATE=$(echo "$JSON" | grep '"BackendState"' | cut -d'"' -f4)

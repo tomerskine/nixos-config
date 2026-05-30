@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 CHOSEN=$(printf "󰌾 Lock\n⏾ Suspend\n󰑓 Reboot\n⏻ Shutdown" \
     | rofi -dmenu -i -p "Power" -theme-str 'window {width: 220px;} listview {lines: 4;}')

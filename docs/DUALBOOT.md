@@ -44,15 +44,15 @@ umount /mnt/arch-home
 
 ---
 
-## Status (2026-05-29)
+## Status (2026-05-30)
 
 | Phase | Status | Notes |
 |---|---|---|
 | Phase 1 — Partition work | **Complete** | Done from running Arch, not live USB |
-| Phase 2 — Nix config updates | **Complete** | UUID committed to repo |
-| Phase 3 — Mount + nixos-install | **Next step** | Boot NixOS live USB and run install |
+| Phase 2 — Nix config updates | **Complete** | UUID committed to repo; config errors fixed |
+| Phase 3 — Mount + nixos-install | **Retry needed** | First attempt failed (see below); config fixes pushed |
 
-### Actual disk layout as of 2026-05-29
+### Actual disk layout (verified 2026-05-30)
 
 ```
 nvme0n1 (953.9 GiB)
@@ -60,25 +60,28 @@ nvme0n1 (953.9 GiB)
 ├── nvme0n1p2  476 GiB    LVM2 PV      ArchinstallVg           ← Arch
 │   └── ArchinstallVg-root  460 GiB btrfs  @, @home, @log, @pkg
 └── nvme0n1p3  476.9 GiB  btrfs        UUID:eb705586-089c-4730-b134-60130a55b353  ← NixOS
-    └── subvolumes: @, @home, @nix, @log  (formatted, ready)
+    └── subvolumes: @, @home, @nix, @log
+        @nix has ~4 GiB of partially downloaded Nix store (reusable)
 ```
 
 **What's done:**
-- btrfs filesystem resized to 460 GiB (`btrfs filesystem resize --resizefs`)
-- LV resized to 460 GiB (`lvresize -L 460G --resizefs`)
+- btrfs filesystem resized to 460 GiB (`lvresize -L 460G --resizefs`)
 - PV resized (`pvresize --setphysicalvolumesize 461G`)
 - Partition nvme0n1p2 shrunk to 476 GiB, nvme0n1p3 created at 476.9 GiB
 - nvme0n1p3 formatted btrfs with label `nixos`, subvolumes @, @home, @nix, @log created
 - `hardware-configuration.nix` updated with real UUID `eb705586-...`
 - `boot.nix` updated with `systemd-boot.timeout = 5`
-
-**Note:** The partition resize was done from the running Arch system (not the live USB as
-originally planned). The btrfs online resize succeeded; `lvresize --resizefs` handled both
-the LV and btrfs in one step. The system rebooted cleanly.
+- First nixos-install attempt — failed with drive-addressing errors (block/segment errors)
+- Fixed config errors from first attempt: wrong package names (rofi, dolphin, qt6ct,
+  networkmanagerapplet), removed xwaylandvideobridge, stripped inline logiops config,
+  removed unavailable fprintd-tod driver, removed libva-intel-driver/vaapiIntel
 
 ---
 
-## Next Step — Run the Installer (Phase 3)
+## Next Step — Retry the Installer (Phase 3)
+
+The NixOS partition already has a partial Nix store from the first attempt (~4 GiB in
+`@nix`). `nixos-install` will reuse cached store paths — no need to wipe first.
 
 Boot the NixOS live USB (`sda` — nixos-graphical-25.11-x86_64), then run as root:
 
@@ -96,10 +99,15 @@ mount -o subvol=/@log,compress=zstd:3,ssd,discard=async,space_cache=v2 \
     /dev/nvme0n1p3 /mnt/var/log
 mount /dev/nvme0n1p1 /mnt/boot
 
-# Clone the config (UUID already set in hardware-configuration.nix — no manual edits needed)
-git clone https://github.com/tomerskine/nixos-config /mnt/etc/nixos
+# The config was already cloned during the first attempt — pull latest instead of re-cloning:
+# If /mnt/etc/nixos already exists:
+git -C /mnt/etc/nixos pull
 
-# Install
+# If /mnt/etc/nixos is missing or broken:
+# rm -rf /mnt/etc/nixos
+# git clone https://github.com/tomerskine/nixos-config /mnt/etc/nixos
+
+# Install (config fixes are in — no manual edits needed)
 nixos-install --flake /mnt/etc/nixos#nixos9310
 # You will be prompted to set the root password.
 

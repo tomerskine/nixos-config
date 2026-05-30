@@ -54,10 +54,15 @@
     enableZshIntegration = true;
   };
 
-  # fzf (fuzzy finder)
+  # fzf (fuzzy finder) — Ctrl+T previews files with bat, Alt+C previews dirs with eza
   programs.fzf = {
     enable               = true;
     enableZshIntegration = true;
+    defaultCommand       = "fd --type f --hidden --follow --exclude .git";
+    fileWidgetCommand    = "fd --type f --hidden --follow --exclude .git";
+    fileWidgetOptions    = [ "--preview 'bat --color=always --style=numbers --line-range=:200 {}'" ];
+    changeDirWidgetCommand  = "fd --type d --hidden --follow --exclude .git";
+    changeDirWidgetOptions  = [ "--preview 'eza --tree --level=2 --color=always {}'" ];
   };
 
   # Place the existing starship config verbatim

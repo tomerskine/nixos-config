@@ -56,7 +56,6 @@
     yazi        # terminal file manager with kitty image preview
     fd          # faster, friendlier find
     ripgrep     # faster grep with sane defaults
-    bat         # cat with syntax highlighting (integrates with fzf preview)
     glow        # render markdown in the terminal
 
     # Data wrangling
@@ -116,6 +115,17 @@
     jq
     fzf   # also configured via programs.fzf in shell.nix
   ];
+
+  # bat: syntax-highlighted cat, Dracula theme, wired into fzf preview
+  programs.bat = {
+    enable = true;
+    config = {
+      theme  = "Dracula";
+      style  = "numbers,changes,header-filename";
+      pager  = "less -FR";
+      italic-text = "always";
+    };
+  };
 
   # direnv with nix-direnv: auto-load per-project environments on cd
   programs.direnv = {

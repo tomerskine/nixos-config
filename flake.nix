@@ -35,11 +35,10 @@
         ./nixos/configuration.nix
         home-manager.nixosModules.home-manager
         {
-          home-manager.useGlobalPkgs        = true;
-          home-manager.useUserPackages      = true;
-          home-manager.users.tom            = import ./home/home.nix;
-          home-manager.extraSpecialArgs     = { inherit inputs; };
-          home-manager.backupFileExtension  = "hm-backup";
+          home-manager.useGlobalPkgs    = true;
+          home-manager.useUserPackages  = true;
+          home-manager.users.tom        = import ./home/home.nix;
+          home-manager.extraSpecialArgs = { inherit inputs; };
         }
       ];
     };

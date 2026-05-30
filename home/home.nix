@@ -122,6 +122,10 @@
     nix-direnv.enable = true;
   };
 
+  # atuin recreates its config on every shell start via the zsh hook,
+  # so force = true is needed to let home-manager own the file.
+  xdg.configFile."atuin/config.toml".force = true;
+
   # atuin: searchable, syncable shell history (replaces Ctrl+R)
   programs.atuin = {
     enable               = true;

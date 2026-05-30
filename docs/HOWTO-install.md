@@ -343,12 +343,21 @@ fwupdmgr update   # prompts for reboot if BIOS update is available
 
 ## Updating the Config Later
 
+`/etc/nixos` is a symlink to `~/repos/nixos-config`, so edits there are tracked in git.
+
 ```bash
-# After editing any .nix file in ~/repos/nixos-config:
-sudo nixos-rebuild switch --flake ~/repos/nixos-config#nixos9310
+# Edit files in ~/repos/nixos-config, then apply:
+nixos-switch   # alias: sudo nixos-rebuild switch --flake /etc/nixos#nixos9310
+
+# Test a change without making it the boot default:
+nixos-test     # alias: sudo nixos-rebuild test --flake /etc/nixos#nixos9310
+
+# Commit and push after a successful rebuild:
+cd ~/repos/nixos-config
+git add -A && git commit -m "describe your change" && git push
 
 # Update all flake inputs to latest:
 cd ~/repos/nixos-config
 nix flake update
-sudo nixos-rebuild switch --flake .#nixos9310
+nixos-switch
 ```

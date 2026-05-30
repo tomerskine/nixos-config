@@ -13,10 +13,15 @@ Boot the NixOS live USB, then run as root:
 
   # 2. Mount the subvolumes
   mount -o subvol=/@,compress=zstd:3,ssd,discard=async,space_cache=v2 /dev/nvme0n1p3 /mnt
+  
   mkdir -p /mnt/{boot,home,nix,var/log}
+  
   mount -o subvol=/@home,compress=zstd:3,ssd,discard=async,space_cache=v2 /dev/nvme0n1p3 /mnt/home
+  
   mount -o subvol=/@nix,compress=zstd:3,ssd,discard=async,noatime,space_cache=v2 /dev/nvme0n1p3 /mnt/nix
+  
   mount -o subvol=/@log,compress=zstd:3,ssd,discard=async,space_cache=v2 /dev/nvme0n1p3 /mnt/var/log
+  
   mount /dev/nvme0n1p1 /mnt/boot
 
   # 3. Get the fixed config

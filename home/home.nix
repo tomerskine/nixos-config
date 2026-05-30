@@ -124,8 +124,17 @@
 
   # atuin: searchable, syncable shell history (replaces Ctrl+R)
   programs.atuin = {
-    enable                = true;
-    enableZshIntegration  = true;
+    enable               = true;
+    enableZshIntegration = true;
+    settings = {
+      sync_address     = "http://omv:8000";
+      auto_sync        = true;
+      sync_frequency   = "5m";
+      search_mode      = "fuzzy";
+      filter_mode      = "global";  # search across all hosts
+      style            = "compact";
+      show_help        = false;
+    };
   };
 
   # zellij: modern terminal multiplexer

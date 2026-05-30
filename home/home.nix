@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 {
   imports = [
@@ -124,7 +124,7 @@
 
   # atuin recreates its config on every shell start via the zsh hook,
   # so force = true is needed to let home-manager own the file.
-  xdg.configFile."atuin/config.toml".force = true;
+  xdg.configFile."atuin/config.toml".force = lib.mkForce true;
 
   # atuin: searchable, syncable shell history (replaces Ctrl+R)
   programs.atuin = {

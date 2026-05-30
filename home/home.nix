@@ -25,7 +25,6 @@
     cmake
     nodejs
     python3
-    python3Packages.pipx
     uv
     rustup
     just        # command runner (simpler make alternative)

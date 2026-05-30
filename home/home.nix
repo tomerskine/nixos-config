@@ -3,6 +3,7 @@
 {
   imports = [
     ./modules/shell.nix
+    ./modules/helix.nix
     ./modules/hyprland.nix
     ./modules/kitty.nix
     ./modules/waybar.nix
@@ -145,9 +146,6 @@
 
   # zellij: modern terminal multiplexer
   programs.zellij.enable = true;
-
-  # helix: modal editor with built-in LSP and tree-sitter, zero config needed
-  programs.helix.enable = true;
 
   # neovim: available as nvim alongside vim
   programs.neovim = {

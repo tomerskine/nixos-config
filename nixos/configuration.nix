@@ -5,7 +5,8 @@
     ./hardware-configuration.nix
     ./modules/boot.nix
     ./modules/networking.nix
-    ./modules/desktop.nix
+    ./modules/gnome.nix
+    ./modules/hyprland-system.nix
     ./modules/audio.nix
     ./modules/bluetooth.nix
     ./modules/security.nix

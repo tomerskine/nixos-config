@@ -127,13 +127,15 @@
     enable               = true;
     enableZshIntegration = true;
     settings = {
-      sync_address     = "http://omv:8000";
-      auto_sync        = true;
-      sync_frequency   = "5m";
-      search_mode      = "fuzzy";
-      filter_mode      = "global";  # search across all hosts
-      style            = "compact";
-      show_help        = false;
+      sync_address   = "http://omv:8000";
+      auto_sync      = true;
+      sync_frequency = "5m";
+      search_mode    = "fuzzy";
+      filter_mode    = "global";  # search across all hosts
+      style          = "compact";
+      show_help      = false;
+      enter_accept   = true;      # Enter runs immediately; Tab puts in prompt for editing
+      sync.records   = true;      # sync v2
     };
   };
 

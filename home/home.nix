@@ -116,6 +116,34 @@
     fzf   # also configured via programs.fzf in shell.nix
   ];
 
+  # yt-dlp config
+  xdg.configFile."yt-dlp/config".text = ''
+    # Output
+    -o ~/yt/%(title)s [%(id)s].%(ext)s
+
+    # Best quality, prefer MP4 to avoid re-encoding
+    -f bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio/best
+    --merge-output-format mp4
+
+    # SponsorBlock: silently remove sponsored segments, self-promo, and interaction reminders
+    --sponsorblock-remove sponsor,selfpromo,interaction
+
+    # Subtitles: English, prefer manual over auto-generated, embed in file
+    --write-subs
+    --write-auto-subs
+    --sub-langs en
+    --embed-subs
+
+    # Metadata
+    --embed-thumbnail
+    --embed-metadata
+    --embed-chapters
+
+    # Safety: don't silently download an entire playlist when given a single video URL
+    # Use --yes-playlist explicitly when you want a full playlist
+    --no-playlist
+  '';
+
   # bat: syntax-highlighted cat, Dracula theme, wired into fzf preview
   programs.bat = {
     enable = true;

@@ -144,6 +144,14 @@
   # pueue: background task queue daemon (client: pueue, daemon: pueued)
   services.pueue.enable = true;
 
+  # Cursor theme — propagates to Wayland, GTK, and X11
+  home.pointerCursor = {
+    gtk.enable = true;
+    name       = "Adwaita";
+    size       = 24;
+    package    = pkgs.adwaita-icon-theme;
+  };
+
   # GTK theming (matches current nwg-look settings)
   gtk = {
     enable = true;
@@ -158,10 +166,6 @@
     font = {
       name = "Adwaita Sans";
       size = 11;
-    };
-    cursorTheme = {
-      name = "default";
-      size = 24;
     };
     gtk3.extraConfig.gtk-application-prefer-dark-theme = 1;
     gtk4 = {

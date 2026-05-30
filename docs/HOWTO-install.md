@@ -272,6 +272,11 @@ rustup default stable
 rustup component add rust-analyzer clippy rustfmt
 
 # 9. Install claude-code (not in nixpkgs — must be installed via npm)
+# On NixOS, npm install -g tries to write to the Nix store which is read-only.
+# Set the prefix to a writable user directory first (only needed once):
+mkdir -p ~/.npm-global
+npm config set prefix ~/.npm-global
+# ~/.npm-global/bin is already on your PATH via shell.nix
 npm install -g @anthropic-ai/claude-code
 ```
 

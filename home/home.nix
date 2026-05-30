@@ -20,7 +20,7 @@
     github-cli
     lazygit
     lazydocker
-    # lazysql     # check if in nixpkgs; install manually if not
+    lazysql
     # lazyssh     # check if in nixpkgs; install manually if not
     cmake
     nodejs
@@ -28,6 +28,9 @@
     python3Packages.pipx
     uv
     rustup
+    just        # command runner (simpler make alternative)
+    tokei       # count lines of code by language
+    hyperfine   # CLI benchmarking
 
     # Container tools (podman is enabled system-wide; desktop + CLI helpers here)
     podman-compose
@@ -46,14 +49,33 @@
     dust
     ncdu
 
+    # File navigation & search
+    eza         # modern ls with icons and git status
+    yazi        # terminal file manager with kitty image preview
+    fd          # faster, friendlier find
+    ripgrep     # faster grep with sane defaults
+    bat         # cat with syntax highlighting (integrates with fzf preview)
+    glow        # render markdown in the terminal
+
+    # Data wrangling
+    yq-go       # like jq but for YAML and TOML
+    fx          # interactive JSON explorer
+
+    # System & network monitoring
+    bandwhich   # network usage broken down by process
+    procs       # better ps with colour and tree view
+
     # Media
     mpv
-    spotify  # unfree
+    spotify   # unfree
+    yt-dlp    # download YouTube/etc. video and audio
+    ffmpeg    # video/audio processing
 
     # Apps
     chromium
     obsidian  # unfree
     steam     # managed system-wide via programs.steam, but listed for awareness
+    ncspot    # Spotify TUI client
 
     # Remote access
     wayvnc
@@ -77,6 +99,12 @@
     jq
     fzf   # also configured via programs.fzf in shell.nix
   ];
+
+  # direnv with nix-direnv: auto-load per-project environments on cd
+  programs.direnv = {
+    enable            = true;
+    nix-direnv.enable = true;
+  };
 
   # GTK theming (matches current nwg-look settings)
   gtk = {

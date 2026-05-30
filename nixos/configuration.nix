@@ -87,6 +87,7 @@
     nano
     less
     jq
+    lsof
     smartmontools
     btrfs-progs
     lvm2

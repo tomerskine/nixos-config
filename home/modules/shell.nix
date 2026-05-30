@@ -25,7 +25,10 @@
     ];
 
     shellAliases = {
-      ls   = "ls --color=auto";
+      ls   = "eza";
+      ll   = "eza -l";
+      la   = "eza -la";
+      tree = "eza --tree";
       grep = "grep --color=auto";
       nixos-switch = "sudo nixos-rebuild switch --flake /etc/nixos#nixos9310";
       nixos-test   = "sudo nixos-rebuild test   --flake /etc/nixos#nixos9310";

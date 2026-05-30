@@ -5,6 +5,30 @@ and install NixOS on the freed space with systemd-boot dual-boot (NixOS as defau
 
 ---
 
+## temp notes
+Boot the NixOS live USB, then run as root:
+
+  # 1. Connect WiFi
+  nmtui
+
+  # 2. Mount the subvolumes
+  mount -o subvol=/@,compress=zstd:3,ssd,discard=async,space_cache=v2 /dev/nvme0n1p3 /mnt
+  mkdir -p /mnt/{boot,home,nix,var/log}
+  mount -o subvol=/@home,compress=zstd:3,ssd,discard=async,space_cache=v2 /dev/nvme0n1p3 /mnt/home
+  mount -o subvol=/@nix,compress=zstd:3,ssd,discard=async,noatime,space_cache=v2 /dev/nvme0n1p3 /mnt/nix
+  mount -o subvol=/@log,compress=zstd:3,ssd,discard=async,space_cache=v2 /dev/nvme0n1p3 /mnt/var/log
+  mount /dev/nvme0n1p1 /mnt/boot
+
+  # 3. Get the fixed config
+  git -C /mnt/etc/nixos pull   # or: rm -rf /mnt/etc/nixos && git clone https://github.com/tomerskine/nixos-config /mnt/etc/nixos
+
+  # 4. Install
+  nixos-install --flake /mnt/etc/nixos#nixos9310
+
+  Two issues were causing the cascading errors:
+  1. services.logiops option didn't exist at the locked nixpkgs rev — now using a manual systemd service
+  2. fprintd.tod.driver package unavailable in nixpkgs-unstable — now overridden with lib.mkForce false
+
 ## Reading This Guide From the NixOS Installer
 
 Open a terminal in the live environment, then use one of these two options:

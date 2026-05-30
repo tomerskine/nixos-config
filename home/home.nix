@@ -45,6 +45,10 @@
     duf
     dust
     ncdu
+    noti        # desktop notification when a command finishes: `nixos-switch; noti`
+    watchexec   # rerun a command on file change (generic entr alternative)
+    mprocs      # run multiple processes in a single TUI with per-process output panes
+    fastfetch   # fast system info display (neofetch successor)
 
     # File navigation & search
     eza         # modern ls with icons and git status
@@ -61,6 +65,21 @@
     # System & network monitoring
     bandwhich   # network usage broken down by process
     procs       # better ps with colour and tree view
+
+    # Network & HTTP
+    xh          # friendlier curl/httpie: `xh get httpbin.org/json`
+    doggo       # better dig with colour and DoH support
+    gping       # ping with a live terminal graph
+    trippy      # traceroute + ping combined into a TUI (command: trip)
+
+    # Document processing
+    pandoc      # universal document converter (markdown → PDF, DOCX, HTML, etc.)
+    qrencode    # generate QR codes from the terminal
+
+    # Terminal recording & presentations
+    asciinema   # record terminal sessions as shareable text files
+    vhs         # write a script of keystrokes, get a GIF back
+    presenterm  # markdown-driven terminal presentations with images (kitty-native)
 
     # Media
     mpv
@@ -102,6 +121,28 @@
     enable            = true;
     nix-direnv.enable = true;
   };
+
+  # atuin: searchable, syncable shell history (replaces Ctrl+R)
+  programs.atuin = {
+    enable                = true;
+    enableZshIntegration  = true;
+  };
+
+  # zellij: modern terminal multiplexer
+  programs.zellij.enable = true;
+
+  # helix: modal editor with built-in LSP and tree-sitter, zero config needed
+  programs.helix.enable = true;
+
+  # neovim: available as nvim alongside vim
+  programs.neovim = {
+    enable      = true;
+    withRuby    = false;  # adopt new default; no Ruby plugins needed
+    withPython3 = true;   # keep Python3 support for Python-based plugins
+  };
+
+  # pueue: background task queue daemon (client: pueue, daemon: pueued)
+  services.pueue.enable = true;
 
   # GTK theming (matches current nwg-look settings)
   gtk = {

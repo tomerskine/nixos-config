@@ -1,8 +1,9 @@
-{ pkgs, ... }:
+{ pkgs, config, ... }:
 
 {
   programs.zsh = {
     enable = true;
+    dotDir = config.home.homeDirectory;  # keep dotfiles in ~ (pin legacy default)
 
     oh-my-zsh = {
       enable  = true;

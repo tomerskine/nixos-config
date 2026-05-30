@@ -11,7 +11,7 @@
     wireplumber.enable = true;
   };
 
-  hardware.pulseaudio.enable = false;
+  services.pulseaudio.enable = false;
 
   # Real-time scheduling for audio — required by PipeWire
   security.rtkit.enable = true;

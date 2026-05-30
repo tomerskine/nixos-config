@@ -13,8 +13,6 @@
   home.homeDirectory = "/home/tom";
   home.stateVersion  = "25.05";
 
-  nixpkgs.config.allowUnfree = true;
-
   home.packages = with pkgs; [
     # Development tools
     github-cli
@@ -125,14 +123,18 @@
       size = 24;
     };
     gtk3.extraConfig.gtk-application-prefer-dark-theme = 1;
-    gtk4.extraConfig.gtk-application-prefer-dark-theme = 1;
+    gtk4 = {
+      theme = null;  # GTK4/libadwaita ignores external themes; dark mode via extraConfig
+      extraConfig.gtk-application-prefer-dark-theme = 1;
+    };
   };
 
   # XDG user directories
   xdg = {
-    enable           = true;
-    userDirs.enable  = true;
-    userDirs.createDirectories = true;
+    enable                        = true;
+    userDirs.enable               = true;
+    userDirs.createDirectories    = true;
+    userDirs.setSessionVariables  = false;  # adopt new default (was true pre-26.05)
   };
 
   programs.home-manager.enable = true;

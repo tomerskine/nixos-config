@@ -2,20 +2,12 @@
 
 {
   programs.git = {
-    enable    = true;
-    userName  = "Tom Erskine";
-    userEmail = "erskine.tom@gmail.com";
+    enable = true;
 
-    delta = {
-      enable  = true;
-      options = {
-        navigate    = true;   # n/N to move between diff sections
-        side-by-side = true;
-        line-numbers = true;
-      };
-    };
+    settings = {
+      user.name  = "Tom Erskine";
+      user.email = "erskine.tom@gmail.com";
 
-    extraConfig = {
       # libsecret stores credentials in GNOME keyring
       credential.helper = "libsecret";
 
@@ -27,6 +19,16 @@
 
       merge.conflictstyle = "diff3";
       diff.colorMoved     = "default";
+    };
+  };
+
+  programs.delta = {
+    enable               = true;
+    enableGitIntegration = true;
+    options = {
+      navigate     = true;   # n/N to move between diff sections
+      side-by-side = true;
+      line-numbers = true;
     };
   };
 }

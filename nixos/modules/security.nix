@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 {
   security.sudo.enable            = true;
@@ -20,11 +20,13 @@
   # Smartcard daemon (required for YubiKey PIV/FIDO2)
   services.pcscd.enable = true;
 
-  # Goodix fingerprint reader (USB 27c6:533c — run `fprintd-enroll` after first login)
-  # TOD (Touch-on-Display) driver required for this specific Goodix sensor variant.
-  # (nixos-hardware.nixosModules.dell-xps-13-9310 also sets these — explicit here for clarity.)
-  services.fprintd.enable          = true;
-  services.fprintd.tod.enable      = true;
+  # Goodix fingerprint reader — TOD disabled for now.
+  # nixos-hardware.nixosModules.dell-xps-13-9310 sets tod.enable = true and
+  # tod.driver = pkgs.libfprint-2-tod1-goodix; that package is unavailable in current
+  # nixpkgs-unstable and causes a build failure. mkForce false overrides nixos-hardware.
+  # Re-enable once the correct driver package is confirmed (run `fprintd-enroll` after).
+  services.fprintd.enable     = true;
+  services.fprintd.tod.enable = lib.mkForce false;
 
   # GNOME keyring for libsecret (git credentials, etc.)
   services.gnome.gnome-keyring.enable = true;

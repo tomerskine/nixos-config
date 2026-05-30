@@ -50,7 +50,6 @@
   environment.systemPackages = with pkgs; [
     # Wayland utilities
     wl-clipboard
-    xwaylandvideobridge
     grim
     slurp
     cliphist
@@ -68,23 +67,23 @@
     mako
 
     # Launchers
-    rofi-wayland
+    rofi
     wofi
     fuzzel
 
     # File managers
     nemo
     nautilus
-    dolphin
+    kdePackages.dolphin
     udiskie
 
     # System tray applets
-    network-manager-applet
+    networkmanagerapplet
     blueman
 
     # Qt Wayland integration + theming
     libsForQt5.qt5ct
-    qt6ct
+    qt6Packages.qt6ct
     nwg-look
 
     # Brightness control (laptop + external)

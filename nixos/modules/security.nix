@@ -25,7 +25,6 @@
   # (nixos-hardware.nixosModules.dell-xps-13-9310 also sets these — explicit here for clarity.)
   services.fprintd.enable          = true;
   services.fprintd.tod.enable      = true;
-  services.fprintd.tod.driver      = pkgs.libfprint-2-tod1-goodix;
 
   # GNOME keyring for libsecret (git credentials, etc.)
   services.gnome.gnome-keyring.enable = true;

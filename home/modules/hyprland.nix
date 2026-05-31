@@ -26,6 +26,9 @@
     executable = true;
   };
 
+  # waynergy config — all connection/keyboard options here, no CLI flags needed
+  xdg.configFile."waynergy/config.ini".source = ../files/waynergy/config.ini;
+
   # Qt platform theme (set in hyprland.lua via hl.env)
   home.sessionVariables = {
     QT_QPA_PLATFORMTHEME = "qt6ct";

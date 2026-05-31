@@ -29,10 +29,8 @@
     hyprlock
     hyprpolkitagent
 
-    # Status bar and notifications
+    # Status bar
     waybar
-    dunst
-    mako
 
     # Launchers
     rofi

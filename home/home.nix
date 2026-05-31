@@ -195,6 +195,60 @@
   # pueue: background task queue daemon (client: pueue, daemon: pueued)
   services.pueue.enable = true;
 
+  # mako: Wayland notification daemon (config from Arch chezmoi backup)
+  services.mako = {
+    enable = true;
+    font                = "JetBrainsMono Nerd Font 11";
+    backgroundColor     = "#1a1a1aff";
+    textColor           = "#ffffffff";
+    borderColor         = "#2980b9ff";
+    borderSize          = 2;
+    borderRadius        = 8;
+    width               = 350;
+    height              = 150;
+    outerMargin         = "10";
+    margin              = "8";
+    padding             = "10,15";
+    icons               = true;
+    maxIconSize         = 48;
+    markup              = true;
+    actions             = true;
+    format              = "<b>%s</b>\\n%b";
+    textAlignment       = "left";
+    defaultTimeout      = 5000;
+    ignoreTimeout       = true;
+    groupBy             = "app-name";
+    maxVisible          = 5;
+    layer               = "overlay";
+    anchor              = "top-right";
+    extraConfig = ''
+      icon-border-radius=4
+      history=1
+      max-history=10
+      sort=-time
+
+      on-button-left=invoke-default-action
+      on-button-middle=dismiss-all
+      on-button-right=dismiss
+
+      [mode=do-not-disturb]
+      invisible=1
+
+      [urgency=low]
+      border-color=#64727dff
+      default-timeout=5000
+
+      [urgency=normal]
+      border-color=#2980b9ff
+      default-timeout=5000
+
+      [urgency=critical]
+      background-color=#c0392bff
+      border-color=#e74c3cff
+      default-timeout=0
+    '';
+  };
+
   # Cursor theme — propagates to Wayland, GTK, and X11
   home.pointerCursor = {
     gtk.enable = true;

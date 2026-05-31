@@ -12,7 +12,7 @@
         rightClickAction = "none";
         widgets = {
           left = [
-            { id = "Workspace"; }
+            { id = "Workspace"; labelMode = "name"; characterCount = 12; }
           ];
           center = [
             { id = "ActiveWindow"; }

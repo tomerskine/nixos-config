@@ -197,40 +197,41 @@
 
   # mako: Wayland notification daemon (config from Arch chezmoi backup)
   services.mako = {
-    enable          = true;
-    font            = "JetBrainsMono Nerd Font 11";
-    backgroundColor = "#1a1a1aff";
-    textColor       = "#ffffffff";
-    borderColor     = "#2980b9ff";
-    borderSize      = 2;
-    borderRadius    = 8;
-    width           = 350;
-    height          = 150;
-    margin          = "8";
-    padding         = "10,15";
-    icons           = true;
-    maxIconSize     = 48;
-    markup          = true;
-    actions         = true;
-    format          = "<b>%s</b>\\n%b";
-    defaultTimeout  = 5000;
-    ignoreTimeout   = true;
-    layer           = "overlay";
-    anchor          = "top-right";
+    enable   = true;
+    settings = {
+      font             = "JetBrainsMono Nerd Font 11";
+      background-color = "#1a1a1aff";
+      text-color       = "#ffffffff";
+      border-color     = "#2980b9ff";
+      border-size      = 2;
+      border-radius    = 8;
+      width            = 350;
+      height           = 150;
+      outer-margin     = 10;
+      margin           = "8";
+      padding          = "10,15";
+      icons            = true;
+      max-icon-size    = 48;
+      icon-border-radius = 4;
+      markup           = true;
+      actions          = true;
+      format           = "<b>%s</b>\\n%b";
+      text-alignment   = "left";
+      default-timeout  = 5000;
+      ignore-timeout   = true;
+      group-by         = "app-name";
+      max-visible      = 5;
+      history          = 1;
+      max-history      = 10;
+      sort             = "-time";
+      anchor           = "top-right";
+      layer            = "overlay";
+      on-button-left   = "invoke-default-action";
+      on-button-middle = "dismiss-all";
+      on-button-right  = "dismiss";
+    };
+    # Criteria sections can't be represented in settings attrset
     extraConfig = ''
-      outer-margin=10
-      text-alignment=left
-      icon-border-radius=4
-      group-by=app-name
-      max-visible=5
-      history=1
-      max-history=10
-      sort=-time
-
-      on-button-left=invoke-default-action
-      on-button-middle=dismiss-all
-      on-button-right=dismiss
-
       [mode=do-not-disturb]
       invisible=1
 

@@ -16,6 +16,7 @@
 
   home.packages = with pkgs; [
     # Development tools
+    devenv
     github-cli
     lazygit
     lazydocker
@@ -157,9 +158,13 @@
   };
 
   # direnv with nix-direnv: auto-load per-project environments on cd
+  # stdlib sources devenv's direnvrc so `use devenv` works in .envrc files
   programs.direnv = {
     enable            = true;
     nix-direnv.enable = true;
+    stdlib = ''
+      source ${pkgs.devenv}/share/devenv/direnvrc
+    '';
   };
 
   # atuin recreates its config on every shell start via the zsh hook,

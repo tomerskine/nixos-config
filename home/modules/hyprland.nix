@@ -15,7 +15,6 @@
   # Lua config and all helper files placed verbatim
   xdg.configFile."hypr/hyprland.lua".source        = ../files/hypr/hyprland.lua;
   xdg.configFile."hypr/hypridle.conf".source        = ../files/hypr/hypridle.conf;
-  xdg.configFile."hypr/hyprlock.conf".source        = ../files/hypr/hyprlock.conf;
   xdg.configFile."hypr/hyprpaper.conf".source       = ../files/hypr/hyprpaper.conf;
   xdg.configFile."hypr/opacity-manager.py".source   = ../files/hypr/opacity-manager.py;
   xdg.configFile."hypr/should-lock.sh" = {

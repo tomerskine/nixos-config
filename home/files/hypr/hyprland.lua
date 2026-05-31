@@ -89,7 +89,7 @@ local runner      = "rofi -show run"
 -- Or execute your favorite apps at launch like this:
 --
 hl.on("hyprland.start", function ()
-  hl.exec_cmd("waybar")
+  hl.exec_cmd("noctalia")
   hl.exec_cmd("systemctl --user start hyprpolkitagent")
   hl.exec_cmd("hyprpaper")
   hl.exec_cmd("hypridle")
@@ -323,9 +323,9 @@ hl.bind(mainMod .. " + Space", hl.dsp.exec_cmd(launcher))
 hl.bind(secondMod .. " + Space", hl.dsp.exec_cmd(runner))
 
 hl.bind(mainMod .. " + Q", hl.dsp.window.close())
-hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("hyprlock"))
+hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("qs -c noctalia-shell ipc call lockScreen lock"))
 hl.bind(mainMod .. " + Tab", hl.dsp.exec_cmd("rofi -show window"))
-hl.bind(mainMod .. " + N",   hl.dsp.exec_cmd("~/.config/waybar/scripts/rename-workspace.sh"))
+hl.bind(mainMod .. " + N",   hl.dsp.exec_cmd("~/.config/noctalia/scripts/rename-workspace.sh"))
 -- closeWindowBind:set_enabled(false)
 hl.bind(mainMod .. " + M", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"))
 -- menu replaced by rofi, vars launcher and runner
@@ -438,4 +438,16 @@ hl.window_rule({
 
     move  = "20 monitor_h-120",
     float = true,
+})
+
+-- Noctalia layer rules (blur requires decoration.blur.enabled = true globally)
+hl.layer_rule({
+    name  = "noctalia-blur",
+    match = { namespace = "noctalia-.*" },
+    blur  = true,
+})
+hl.layer_rule({
+    name  = "noctalia-ignorealpha",
+    match = { namespace = "noctalia-.*" },
+    ignorealpha = 0.5,
 })

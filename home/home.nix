@@ -6,7 +6,7 @@
     ./modules/helix.nix
     ./modules/hyprland.nix
     ./modules/kitty.nix
-    ./modules/waybar.nix
+    ./modules/noctalia.nix
     ./modules/git.nix
   ];
 
@@ -200,61 +200,6 @@
 
   # pueue: background task queue daemon (client: pueue, daemon: pueued)
   services.pueue.enable = true;
-
-  # mako: Wayland notification daemon (config from Arch chezmoi backup)
-  services.mako = {
-    enable   = true;
-    settings = {
-      font             = "JetBrainsMono Nerd Font 11";
-      background-color = "#1a1a1aff";
-      text-color       = "#ffffffff";
-      border-color     = "#2980b9ff";
-      border-size      = 2;
-      border-radius    = 8;
-      width            = 350;
-      height           = 150;
-      outer-margin     = 10;
-      margin           = "8";
-      padding          = "10,15";
-      icons            = true;
-      max-icon-size    = 48;
-      icon-border-radius = 4;
-      markup           = true;
-      actions          = true;
-      format           = "<b>%s</b>\\n%b";
-      text-alignment   = "left";
-      default-timeout  = 5000;
-      ignore-timeout   = true;
-      group-by         = "app-name";
-      max-visible      = 5;
-      history          = 1;
-      max-history      = 10;
-      sort             = "-time";
-      anchor           = "top-right";
-      layer            = "overlay";
-      on-button-left   = "invoke-default-action";
-      on-button-middle = "dismiss-all";
-      on-button-right  = "dismiss";
-    };
-    # Criteria sections can't be represented in settings attrset
-    extraConfig = ''
-      [mode=do-not-disturb]
-      invisible=1
-
-      [urgency=low]
-      border-color=#64727dff
-      default-timeout=5000
-
-      [urgency=normal]
-      border-color=#2980b9ff
-      default-timeout=5000
-
-      [urgency=critical]
-      background-color=#c0392bff
-      border-color=#e74c3cff
-      default-timeout=0
-    '';
-  };
 
   # Cursor theme — propagates to Wayland, GTK, and X11
   home.pointerCursor = {

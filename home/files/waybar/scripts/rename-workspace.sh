@@ -7,4 +7,6 @@ current_label=$(echo "$current" | sed 's/^[0-9]*: //')
 
 new_name=$(echo "$current_label" | rofi -dmenu -p "Rename workspace $id:")
 
-[[ $? -eq 0 && -n "$new_name" ]] && hyprctl dispatch renameworkspace "$id $id: $new_name"
+# hyprctl dispatch in Lua config mode requires valid Lua: hl.dsp.workspace.rename(...)
+[[ $? -eq 0 && -n "$new_name" ]] && \
+    hyprctl dispatch "hl.dsp.workspace.rename({workspace=$id, name=\"$id: $new_name\"})"

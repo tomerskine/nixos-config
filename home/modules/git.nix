@@ -17,6 +17,8 @@
       "credential \"https://gist.github.com\"".helper =
         "!/run/current-system/sw/bin/gh auth git-credential";
 
+      "credential \"http://omv:3000\"".helper = "cache --timeout=10800";
+
       merge.conflictstyle = "diff3";
       diff.colorMoved     = "default";
     };

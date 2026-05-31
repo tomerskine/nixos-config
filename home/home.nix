@@ -97,7 +97,7 @@
     # Remote access
     wayvnc
     weylus
-    waynergy  # Synergy client for Wayland (connects to sixseven-windows)
+    input-leap  # Open-source KVM client, connects to Input Leap server on sixseven
 
     # Security
     _1password-cli  # unfree; GUI managed at system level

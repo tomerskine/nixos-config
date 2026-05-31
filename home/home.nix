@@ -113,7 +113,8 @@
     # Miscellaneous
     wget
     jq
-    fzf   # also configured via programs.fzf in shell.nix
+    fzf          # also configured via programs.fzf in shell.nix
+    libnotify    # provides notify-send
   ];
 
   # yt-dlp config

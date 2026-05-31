@@ -440,14 +440,9 @@ hl.window_rule({
     float = true,
 })
 
--- Noctalia layer rules (blur requires decoration.blur.enabled = true globally)
+-- Noctalia layer rule: enable blur when decoration.blur.enabled = true globally
 hl.layer_rule({
     name  = "noctalia-blur",
     match = { namespace = "noctalia-.*" },
     blur  = true,
-})
-hl.layer_rule({
-    name  = "noctalia-ignorealpha",
-    match = { namespace = "noctalia-.*" },
-    ignorealpha = 0.5,
 })

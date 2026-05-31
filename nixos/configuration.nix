@@ -17,6 +17,7 @@
   nix = {
     settings = {
       experimental-features = [ "nix-command" "flakes" ];
+      trusted-users = [ "root" "tom" ];
 
       # Deduplicate identical files in the Nix store (saves significant disk space)
       auto-optimise-store = true;

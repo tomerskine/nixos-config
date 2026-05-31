@@ -168,7 +168,7 @@
     enable            = true;
     nix-direnv.enable = true;
     stdlib = ''
-      source ${pkgs.devenv}/share/devenv/direnvrc
+      eval "$(devenv direnvrc)"
     '';
   };
 

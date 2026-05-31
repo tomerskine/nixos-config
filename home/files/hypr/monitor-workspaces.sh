@@ -17,13 +17,9 @@ def has_external():
     return any(m["name"] in EXTERNAL_MONITORS for m in get_monitors())
 
 
-def move_workspaces_to_external(monitor):
-    for ws in range(1, 6):
-        subprocess.run(["hyprctl", "dispatch", "moveworkspacetomonitor", f"{ws} {monitor}"])
-
-
 def switch_to_workspace_1():
-    subprocess.run(["hyprctl", "dispatch", "workspace", "1"])
+    # Lua config requires Lua dispatch syntax — plain dispatcher names fail
+    subprocess.run(["hyprctl", "dispatch", "hl.dsp.focus({workspace=1})"])
 
 
 # On startup: if laptop-only, default to workspace 1 instead of 6.
@@ -32,7 +28,10 @@ time.sleep(0.5)
 if not has_external():
     switch_to_workspace_1()
 
-# Listen for monitor add/remove events
+# Listen for monitor add/remove events.
+# monitoradded: workspace rules in hyprland.lua already pin workspaces
+# 1-5 to DP-1/DP-3, so Hyprland reassigns them automatically.
+# monitorremoved: switch to workspace 1 when dropping to laptop-only.
 socket_path = (
     f"{os.environ['XDG_RUNTIME_DIR']}/hypr"
     f"/{os.environ['HYPRLAND_INSTANCE_SIGNATURE']}/.socket2.sock"
@@ -46,12 +45,7 @@ while True:
     while "\n" in buf:
         line, buf = buf.split("\n", 1)
 
-        if line.startswith("monitoradded>>"):
-            monitor = line[len("monitoradded>>"):]
-            if monitor in EXTERNAL_MONITORS:
-                move_workspaces_to_external(monitor)
-
-        elif line.startswith("monitorremoved>>"):
+        if line.startswith("monitorremoved>>"):
             monitor = line[len("monitorremoved>>"):]
             if monitor in EXTERNAL_MONITORS and not has_external():
                 switch_to_workspace_1()

@@ -103,7 +103,7 @@
     pluginSettings = {
       tailscale = {
         refreshInterval = 5000;
-        compactMode = false;
+        compactMode = true;
         showIpAddress = true;
         showPeerCount = true;
         terminalCommand = "kitty";

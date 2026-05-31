@@ -96,7 +96,7 @@ hl.on("hyprland.start", function ()
   hl.exec_cmd("udiskie --tray")
   hl.exec_cmd("python3 /home/tom/.config/hypr/opacity-manager.py")
   hl.exec_cmd("python3 /home/tom/.config/hypr/monitor-workspaces.sh")
-  hl.exec_cmd("rustdesk")
+  hl.exec_cmd("waynergy sixseven-windows")
 end)
 
 

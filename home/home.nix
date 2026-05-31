@@ -97,7 +97,7 @@
     # Remote access
     wayvnc
     weylus
-    rustdesk
+    waynergy  # Synergy client for Wayland (connects to sixseven-windows)
 
     # Security
     _1password-cli  # unfree; GUI managed at system level
@@ -181,7 +181,7 @@
     enable               = true;
     enableZshIntegration = true;
     settings = {
-      sync_address   = "http://omv:8000";
+      sync_address   = "http://omv:5555";
       auto_sync      = true;
       sync_frequency = "5m";
       search_mode    = "fuzzy";

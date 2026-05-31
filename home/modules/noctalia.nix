@@ -9,6 +9,7 @@
     settings = {
       bar = {
         position = "top";
+        rightClickAction = "none";
         widgets = {
           left = [
             { id = "Workspace"; }
@@ -17,8 +18,8 @@
             { id = "ActiveWindow"; }
           ];
           right = [
-            # Media — replaces mpris
-            { id = "MediaMini"; hideWhenIdle = true; }
+            # Media — icon only when playing, expands to panel on click
+            { id = "MediaMini"; hideWhenIdle = true; compactMode = true; }
 
             # Tailscale — official plugin (auto-installed on first launch)
             { id = "tailscale"; }
@@ -27,7 +28,7 @@
             { id = "Network"; }
             { id = "Bluetooth"; }
 
-            # Audio + brightness (new)
+            # Audio + brightness
             { id = "Volume"; }
             { id = "Brightness"; }
 
@@ -48,13 +49,17 @@
               generalTooltipText = "Clipboard history";
             }
 
-            # System tray + session menu (replaces custom/power rofi script)
+            # System tray + session menu
             { id = "Tray"; }
             { id = "SessionMenu"; }
 
-            { id = "Clock"; }
+            { id = "Clock"; formatHorizontal = "HH:mm"; }
           ];
         };
+      };
+
+      dock = {
+        enabled = false;
       };
 
       idle = {
@@ -70,6 +75,10 @@
 
       colorSchemes = {
         darkMode = true;
+      };
+
+      wallpaper = {
+        enabled = false;
       };
     };
 

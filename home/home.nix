@@ -111,6 +111,11 @@
     gnome-calculator
     gnome-system-monitor
 
+    # Nix tooling
+    statix    # linter: catches anti-patterns (empty let, repeated keys, etc.)
+    deadnix   # finds unused Nix bindings
+    nil       # Nix LSP — inline errors + completion in VS Code / Helix
+
     # Miscellaneous
     wget
     jq

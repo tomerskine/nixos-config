@@ -33,10 +33,32 @@
       grep = "grep --color=auto";
       nixos-switch = "sudo nixos-rebuild switch --flake /etc/nixos#nixos9310";
       nixos-test   = "sudo nixos-rebuild test   --flake /etc/nixos#nixos9310";
+      # Evaluate the full NixOS config without building — fast sanity check (~5s)
+      nixos-eval   = "nix eval '/etc/nixos#nixosConfigurations.nixos9310.config.system.build.toplevel.drvPath'";
+      # Show what would be fetched/built without actually building it
+      nixos-dry    = "nix build '/etc/nixos#nixosConfigurations.nixos9310.config.system.build.toplevel' --dry-run --no-link";
     };
 
     initContent = ''
       export PATH="$HOME/.local/bin:$HOME/.npm-global/bin:$PATH"
+
+      # Format, lint, and evaluate the NixOS flake without building.
+      # Applies nix fmt + statix fixes in-place, then checks for dead code
+      # and evaluates the full config. Safe to run repeatedly.
+      nix-chk() {
+        (
+          cd /etc/nixos &&
+          echo "==> nix fmt" && nix fmt &&
+          echo "==> statix fix" && statix fix . &&
+          echo "==> deadnix" && deadnix . &&
+          echo "==> nix flake check" && nix flake check --no-build
+        ) && echo "\n✓ All checks passed"
+      }
+
+      # Run all checks (nix-chk) and, only if they pass, rebuild + switch.
+      nrs() {
+        nix-chk && sudo nixos-rebuild switch --flake /etc/nixos#nixos9310
+      }
     '';
   };
 

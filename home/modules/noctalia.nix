@@ -22,7 +22,7 @@
             { id = "MediaMini"; hideWhenIdle = true; compactMode = true; }
 
             # Tailscale — official plugin (auto-installed on first launch)
-            { id = "tailscale"; }
+            { id = "plugin:tailscale"; }
 
             # Connectivity
             { id = "Network"; }

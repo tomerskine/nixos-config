@@ -48,7 +48,7 @@
       nix-chk() {
         (
           cd /etc/nixos &&
-          echo "==> nix fmt" && nix fmt &&
+          echo "==> fmt (check)" && nix fmt -- --check $(git ls-files '*.nix') 2>&1 || echo "  ↳ formatting issues found — run 'nix fmt' to fix" &&
           echo "==> statix fix" && statix fix . &&
           echo "==> deadnix" && deadnix . &&
           echo "==> nix flake check" && nix flake check --no-build

@@ -97,7 +97,7 @@
     # Remote access
     wayvnc
     weylus
-    input-leap  # Open-source KVM client, connects to Input Leap server on sixseven
+    waynergy  # Wayland-native Synergy client — no RemoteDesktop portal needed
 
     # Security
     _1password-cli  # unfree; GUI managed at system level

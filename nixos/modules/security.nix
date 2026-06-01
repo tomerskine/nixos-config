@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 {
   security.sudo.enable            = true;
@@ -19,9 +19,10 @@
   };
 
   # Fingerprint PAM auth for login, sudo, and polkit
-  security.pam.services.login.fprintAuth    = true;
-  security.pam.services.sudo.fprintAuth     = true;
-  security.pam.services.polkit-1.fprintAuth = true;
+  # mkForce needed: gdm.nix sets login.fprintAuth = false
+  security.pam.services.login.fprintAuth    = lib.mkForce true;
+  security.pam.services.sudo.fprintAuth     = lib.mkForce true;
+  security.pam.services.polkit-1.fprintAuth = lib.mkForce true;
 
   # Smartcard daemon (required for YubiKey PIV/FIDO2)
   services.pcscd.enable = true;

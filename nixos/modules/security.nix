@@ -1,4 +1,4 @@
-{ pkgs, lib, ... }:
+{ pkgs, ... }:
 
 {
   security.sudo.enable            = true;
@@ -11,25 +11,33 @@
     polkitPolicyOwners     = [ "tom" ];
   };
 
-  # YubiKey PAM U2F (sudo + login)
+  # YubiKey PAM U2F (sudo + login) — enroll with: pamu2fcfg | sudo tee /etc/security/u2f_keys
   security.pam.u2f = {
-    enable        = true;
-    settings.cue  = true;
+    enable              = true;
+    settings.cue        = true;
+    settings.authFile   = "/etc/security/u2f_keys";
   };
+
+  # Fingerprint PAM auth for login, sudo, and polkit
+  security.pam.services.login.fprintAuth    = true;
+  security.pam.services.sudo.fprintAuth     = true;
+  security.pam.services.polkit-1.fprintAuth = true;
 
   # Smartcard daemon (required for YubiKey PIV/FIDO2)
   services.pcscd.enable = true;
 
-  # Goodix fingerprint reader — TOD disabled for now.
-  # nixos-hardware.nixosModules.dell-xps-13-9310 sets tod.enable = true and
-  # tod.driver = pkgs.libfprint-2-tod1-goodix; that package is unavailable in current
-  # nixpkgs-unstable and causes a build failure. mkForce false overrides nixos-hardware.
-  # Re-enable once the correct driver package is confirmed (run `fprintd-enroll` after).
-  services.fprintd.enable     = true;
-  services.fprintd.tod.enable = lib.mkForce false;
+  # Goodix fingerprint reader — libfprint-2-tod1-goodix is now available in nixpkgs-unstable.
+  # After rebuild: fprintd-enroll -f right-index-finger tom
+  services.fprintd.enable = true;
+  services.fprintd.tod = {
+    enable = true;
+    driver = pkgs.libfprint-2-tod1-goodix;
+  };
 
   # GNOME keyring for libsecret (git credentials, etc.)
+  # SSH agent component disabled — 1Password handles SSH via ~/.1password/agent.sock
   services.gnome.gnome-keyring.enable = true;
+  programs.ssh.startAgent = false;
 
   environment.systemPackages = with pkgs; [
     age

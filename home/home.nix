@@ -8,6 +8,7 @@
     ./modules/kitty.nix
     ./modules/noctalia.nix
     ./modules/git.nix
+    ./modules/ssh.nix
   ];
 
   home.username    = "tom";

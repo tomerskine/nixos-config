@@ -69,8 +69,9 @@
       };
 
       general = {
-        # Noctalia locks the session on system suspend
-        lockOnSuspend = true;
+        lockOnSuspend          = true;
+        autoStartAuth          = true;  # auto-start fingerprint auth on lock screen
+        allowPasswordWithFprintd = true; # allow password as fallback
       };
 
       colorSchemes = {

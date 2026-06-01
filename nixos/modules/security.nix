@@ -11,7 +11,13 @@
     polkitPolicyOwners     = [ "tom" ];
   };
 
-  # YubiKey PAM U2F (sudo + login) — enroll with: pamu2fcfg | sudo tee /etc/security/u2f_keys
+  # YubiKey PAM U2F (sudo + login + polkit).
+  # !! /etc/security/u2f_keys does not exist until you run the enrollment command below.
+  # !! Until it exists, YubiKey auth is silently skipped and password/fingerprint still work.
+  # To enroll (plug in YubiKey first, touch it when the LED flashes):
+  #   pamu2fcfg | sudo tee /etc/security/u2f_keys
+  # To add a second YubiKey later:
+  #   pamu2fcfg -n | sudo tee -a /etc/security/u2f_keys
   security.pam.u2f = {
     enable              = true;
     settings.cue        = true;

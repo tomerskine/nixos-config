@@ -27,13 +27,12 @@
   # Smartcard daemon (required for YubiKey PIV/FIDO2)
   services.pcscd.enable = true;
 
-  # Goodix fingerprint reader — libfprint-2-tod1-goodix is now available in nixpkgs-unstable.
+  # Goodix fingerprint reader — nixos-hardware already sets tod.enable + tod.driver
+  # for the Dell XPS 13 9310. We previously forced tod.enable = false because the
+  # driver was unavailable; now it's in nixpkgs so just enable fprintd and let
+  # nixos-hardware handle the rest.
   # After rebuild: fprintd-enroll -f right-index-finger tom
   services.fprintd.enable = true;
-  services.fprintd.tod = {
-    enable = true;
-    driver = pkgs.libfprint-2-tod1-goodix;
-  };
 
   # GNOME keyring for libsecret (git credentials, etc.)
   # SSH agent component disabled — 1Password handles SSH via ~/.1password/agent.sock
